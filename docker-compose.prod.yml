@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: expense_mongodb_prod
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+      MONGO_INITDB_DATABASE: expense_management
+    volumes:
+      - mongodb_prod_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - expense_network
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: expense_redis_prod
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - expense_network
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expense_app_prod
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongodb:27017/expense_management?authSource=admin
+      - JWT_SECRET=${JWT_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - expense_network
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache
+      - /var/log
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: expense_nginx_prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - expense_network
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+
+volumes:
+  mongodb_prod_data:
+    driver: local
+  redis_prod_data:
+    driver: local
+
+networks:
+  expense_network:
+    driver: bridge

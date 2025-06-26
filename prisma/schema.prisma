@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  password    String
+  role        Role     @default(FUNCIONARIO)
+  department  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  submittedExpenses Expense[] @relation("SubmittedBy")
+  validatedExpenses Expense[] @relation("ValidatedBy")
+  signedExpenses    Expense[] @relation("SignedBy")
+
+  @@map("users")
+}
+
+model Expense {
+  id              String        @id @default(cuid())
+  title           String
+  description     String
+  amount          Float
+  category        String
+  date            DateTime
+  status          ExpenseStatus @default(PENDING)
+  receiptUrl      String?
+  comments        String?
+  digitalSignature String?
+  signedData      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  validatedAt     DateTime?
+  signedAt        DateTime?
+
+  // Relations
+  submittedById String
+  submittedBy   User   @relation("SubmittedBy", fields: [submittedById], references: [id])
+  
+  validatedById String?
+  validatedBy   User?   @relation("ValidatedBy", fields: [validatedById], references: [id])
+  
+  signedById    String?
+  signedBy      User?   @relation("SignedBy", fields: [signedById], references: [id])
+
+  @@map("expenses")
+}
+
+enum Role {
+  FUNCIONARIO
+  GERENTE
+  DIRETOR
+}
+
+enum ExpenseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SIGNED
+}
