@@ -1,12 +1,19 @@
 {
-  "name": "my-v0-project",
-  "version": "0.1.0",
+  "name": "sistema-gestao-despesas",
+  "version": "1.0.0",
   "private": true,
+  "description": "Sistema completo de gestão de despesas com assinatura digital",
   "scripts": {
-    "build": "next build",
     "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint",
-    "start": "next start"
+    "setup": "node scripts/setup.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "node scripts/seed.js",
+    "db:reset": "prisma migrate reset",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -71,5 +78,17 @@
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
-  }
+  },
+  "keywords": [
+    "nextjs",
+    "typescript",
+    "prisma",
+    "authentication",
+    "digital-signature",
+    "expense-management",
+    "cryptography",
+    "jwt"
+  ],
+  "author": "Sistema de Gestão de Despesas",
+  "license": "MIT"
 }
