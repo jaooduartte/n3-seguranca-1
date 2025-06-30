@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
   Shield,
@@ -221,6 +222,8 @@ export default function VerifySignature() {
           </Alert>
         )}
 
+
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Detalhes do Relatório */}
           <Card>
@@ -290,119 +293,89 @@ export default function VerifySignature() {
                 Verificar a autenticidade da assinatura digital
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {!verificationResult ? (
-                <div className="text-center py-8">
-                  <Shield className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-gray-500 mb-4">
-                    Clique no botão abaixo para verificar a assinatura digital
-                  </p>
-                  <Button onClick={handleVerifySignature} disabled={verifying}>
-                    {verifying ? "Verificando..." : "Verificar Assinatura"}
-                  </Button>
+          <CardContent className="space-y-4">
+            {!verificationResult ? (
+              <div className="text-center py-8">
+                <Shield className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <p className="text-gray-500 mb-4">
+                  Clique no botão abaixo para verificar a assinatura digital
+                </p>
+                <Button onClick={handleVerifySignature} disabled={verifying}>
+                  {verifying ? "Verificando..." : "Verificar Assinatura"}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Badges de resultado de verificação */}
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant={verificationResult.details.signatureValid ? "default" : "destructive"}>
+                    {verificationResult.details.signatureValid ? "Assinatura válida" : "Assinatura inválida"}
+                  </Badge>
+                  <Badge variant={verificationResult.details.dataIntegrity ? "default" : "destructive"}>
+                    {verificationResult.details.dataIntegrity ? "Dados íntegros" : "Dados alterados"}
+                  </Badge>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  <Alert
-                    variant={
-                      verificationResult.isValid ? "default" : "destructive"
-                    }
-                  >
-                    {verificationResult.isValid ? (
-                      <CheckCircle className="h-4 w-4" />
-                    ) : (
-                      <XCircle className="h-4 w-4" />
-                    )}
-                    <AlertDescription>
-                      {verificationResult.isValid
-                        ? "Assinatura digital válida! O documento é autêntico."
-                        : "Assinatura digital inválida! O documento pode ter sido alterado."}
-                    </AlertDescription>
-                  </Alert>
+                <Alert
+                  variant={
+                    verificationResult.isValid ? "default" : "destructive"
+                  }
+                >
+                  {verificationResult.isValid ? (
+                    <CheckCircle className="h-4 w-4" />
+                  ) : (
+                    <XCircle className="h-4 w-4" />
+                  )}
+                  <AlertDescription>
+                    {verificationResult.isValid
+                      ? "Assinatura digital válida! O documento é autêntico."
+                      : "Assinatura digital inválida! O documento pode ter sido alterado."}
+                  </AlertDescription>
+                </Alert>
 
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Detalhes da Verificação:</h4>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex items-center space-x-2">
-                        {verificationResult.details.signatureValid ? (
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-red-500" />
-                        )}
-                        <span>
-                          Assinatura criptográfica:{" "}
-                          {verificationResult.details.signatureValid
-                            ? "Válida"
-                            : "Inválida"}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {verificationResult.details.dataIntegrity ? (
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-red-500" />
-                        )}
-                        <span>
-                          Integridade dos dados:{" "}
-                          {verificationResult.details.dataIntegrity
-                            ? "Preservada"
-                            : "Comprometida"}
-                        </span>
-                      </div>
-                      <div className="text-gray-600">
-                        <p>Assinado por: {verificationResult.details.signer}</p>
-                        <p>
-                          Data/hora:{" "}
-                          {new Date(
-                            verificationResult.details.timestamp
-                          ).toLocaleString("pt-BR")}
-                        </p>
-                      </div>
-                    </div>
+                {/* Badge para assinatura simulada */}
+                {expense.simulated && (
+                  <div className="flex items-center">
+                    <span className="text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                      Assinatura Simulada
+                    </span>
                   </div>
+                )}
 
-                  <div className="space-y-2 pt-4">
-                    <h4 className="font-medium ">
-                      Detalhes Técnicos da Assinatura
-                    </h4>
-                    <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
-                      <p className="mb-2">
-                        <strong>Hash dos dados assinados (SHA-256):</strong>
-                      </p>
-                      <p>
-                        {expense.signedData &&
-                          crypto
-                            .createHash("sha256")
-                            .update(expense.signedData)
-                            .digest("hex")}
-                      </p>
-                    </div>
-                    <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
-                      <p className="mb-2">
-                        <strong>Assinatura digital (Base64):</strong>
-                      </p>
-                      <p>{expense.digitalSignature}</p>
-                    </div>
-                    <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
-                      <p className="mb-2">
-                        <strong>Dados assinados:</strong>
-                      </p>
-                      <pre className="whitespace-pre-wrap">
-                        {expense.signedData}
-                      </pre>
-                    </div>
+
+                <div className="space-y-2 pt-4">
+                  <h4 className="font-medium ">Detalhes Técnicos da Assinatura</h4>
+                  <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
+                    <p className="mb-2">
+                      <strong>Hash dos dados assinados (SHA-256):</strong>
+                    </p>
+                    <p>
+                      {expense.signedData && crypto.createHash("sha256").update(expense.signedData).digest("hex")}
+                    </p>
                   </div>
-
-                  <Button
-                    onClick={handleVerifySignature}
-                    disabled={verifying}
-                    variant="outline"
-                  >
-                    Verificar Novamente
-                  </Button>
+                  <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
+                    <p className="mb-2">
+                      <strong>Assinatura digital (Base64):</strong>
+                    </p>
+                    <p>{expense.digitalSignature}</p>
+                  </div>
+                  <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
+                    <p className="mb-2">
+                      <strong>Dados assinados:</strong>
+                    </p>
+                    <pre className="whitespace-pre-wrap">{expense.signedData}</pre>
+                  </div>
                 </div>
-              )}
-            </CardContent>
+
+                <Button
+                  onClick={handleVerifySignature}
+                  disabled={verifying}
+                  variant="outline"
+                >
+                  Verificar Novamente
+                </Button>
+              </div>
+            )}
+          </CardContent>
           </Card>
         </div>
       </div>

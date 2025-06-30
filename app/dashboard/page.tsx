@@ -304,51 +304,6 @@ export default function Dashboard() {
             </Card>
           )}
 
-          {/* Verificar Assinaturas - Diretor */}
-          {user.role === "diretor" && (
-            <>
-              <Card
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => router.push("/verify-signature")}
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Verificar Assinaturas
-                  </CardTitle>
-                  <CardDescription>
-                    Verificar autenticidade das assinaturas
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full bg-transparent" variant="outline">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Verificar
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => router.push("/delete-expenses")}
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <AlertCircle className="w-5 h-5 mr-2" />
-                    Apagar Relatórios
-                  </CardTitle>
-                  <CardDescription>
-                    Remover relatórios de despesas para demonstração
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full bg-transparent" variant="outline">
-                    <AlertCircle className="w-4 h-4 mr-2" />
-                    Apagar Relatórios
-                  </Button>
-                </CardContent>
-              </Card>
-            </>
-          )}
         </div>
       </div>
     </div>
