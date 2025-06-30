@@ -114,7 +114,7 @@ export default function SignExpense() {
       const keyPair = await generateKeyPair();
 
       // Assinar os dados
-      const signature = await signData(data, keyPair.privateKey);
+      const signature = await signData(data, keyPair);
 
       return JSON.stringify(signature);
     } catch (error) {

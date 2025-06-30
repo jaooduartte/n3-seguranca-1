@@ -1,4 +1,7 @@
+
 "use client";
+
+import crypto from "crypto";
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
@@ -394,6 +397,30 @@ export default function VerifySignature() {
                           ).toLocaleString("pt-BR")}
                         </p>
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-4">
+                    <h4 className="font-medium ">Detalhes Técnicos da Assinatura</h4>
+                    <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
+                      <p className="mb-2">
+                        <strong>Hash dos dados assinados (SHA-256):</strong>
+                      </p>
+                      <p>
+                        {expense.signedData && crypto.createHash("sha256").update(expense.signedData).digest("hex")}
+                      </p>
+                    </div>
+                    <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
+                      <p className="mb-2">
+                        <strong>Assinatura digital (Base64):</strong>
+                      </p>
+                      <p>{expense.digitalSignature}</p>
+                    </div>
+                    <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
+                      <p className="mb-2">
+                        <strong>Dados assinados:</strong>
+                      </p>
+                      <pre className="whitespace-pre-wrap">{expense.signedData}</pre>
                     </div>
                   </div>
 

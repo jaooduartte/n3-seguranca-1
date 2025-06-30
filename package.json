@@ -10,6 +10,7 @@
     "lint": "next lint",
     "setup": "node scripts/setup.js",
     "db:generate": "prisma generate",
+    "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "node scripts/seed.js",
     "db:reset": "prisma migrate reset",
