@@ -1,4 +1,3 @@
-
 "use client";
 
 import crypto from "crypto";
@@ -69,7 +68,6 @@ export default function VerifySignature() {
   const [verificationResult, setVerificationResult] =
     useState<VerificationResult | null>(null);
   const [error, setError] = useState("");
-  const [useSimulation, setUseSimulation] = useState(false);
   const router = useRouter();
   const params = useParams();
 
@@ -118,14 +116,7 @@ export default function VerifySignature() {
     originalData: string
   ): Promise<boolean> => {
     try {
-      if (useSimulation) {
-        // Usar simulação para desenvolvimento
-        return simulateSignatureVerification();
-      }
-
       const signature: DigitalSignature = JSON.parse(signatureData);
-
-      // Verificar assinatura usando Web Crypto API
       return await verifySignature(signature, originalData);
     } catch (error) {
       console.error("Erro ao verificar assinatura:", error);
@@ -229,36 +220,6 @@ export default function VerifySignature() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-
-        {/* Modo de Simulação */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-sm">Modo de Desenvolvimento</CardTitle>
-            <CardDescription>
-              Ative a simulação para testar sem criptografia real
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="simulation"
-                checked={useSimulation}
-                onChange={(e) => setUseSimulation(e.target.checked)}
-                className="rounded"
-              />
-              <Label htmlFor="simulation">Usar simulação de verificação</Label>
-            </div>
-            {useSimulation && (
-              <Alert className="mt-2">
-                <AlertDescription>
-                  Modo de simulação ativo. A verificação será simulada para fins
-                  de desenvolvimento.
-                </AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Detalhes do Relatório */}
@@ -401,13 +362,19 @@ export default function VerifySignature() {
                   </div>
 
                   <div className="space-y-2 pt-4">
-                    <h4 className="font-medium ">Detalhes Técnicos da Assinatura</h4>
+                    <h4 className="font-medium ">
+                      Detalhes Técnicos da Assinatura
+                    </h4>
                     <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
                       <p className="mb-2">
                         <strong>Hash dos dados assinados (SHA-256):</strong>
                       </p>
                       <p>
-                        {expense.signedData && crypto.createHash("sha256").update(expense.signedData).digest("hex")}
+                        {expense.signedData &&
+                          crypto
+                            .createHash("sha256")
+                            .update(expense.signedData)
+                            .digest("hex")}
                       </p>
                     </div>
                     <div className="bg-gray-100 p-4 rounded text-sm font-mono break-all">
@@ -420,7 +387,9 @@ export default function VerifySignature() {
                       <p className="mb-2">
                         <strong>Dados assinados:</strong>
                       </p>
-                      <pre className="whitespace-pre-wrap">{expense.signedData}</pre>
+                      <pre className="whitespace-pre-wrap">
+                        {expense.signedData}
+                      </pre>
                     </div>
                   </div>
 

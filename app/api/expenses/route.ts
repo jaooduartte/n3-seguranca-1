@@ -101,3 +101,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 })
   }
 }
+
+export async function GET(request: NextRequest) {
+  try {
+    const token = getTokenFromHeader(request.headers.get("authorization"));
+    if (!token) {
+      return NextResponse.json({ message: "Token não fornecido" }, { status: 401 });
+    }
+    const user = verifyToken(token);
+    if (!user) {
+      return NextResponse.json({ message: "Token inválido" }, { status: 401 });
+    }
+    const expenses = await prisma.expense.findMany({
+      include: {
+        submittedBy: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+      orderBy: { date: "desc" },
+    });
+    return NextResponse.json(expenses);
+  } catch (error) {
+    return NextResponse.json({ message: "Erro ao buscar relatórios" }, { status: 500 });
+  }
+}
