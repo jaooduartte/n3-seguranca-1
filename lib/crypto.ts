@@ -31,7 +31,7 @@ export async function generateKeyPair(): Promise<CryptoKeyPair> {
 }
 
 // Função para assinar dados
-export async function signData(data: string, privateKey: CryptoKey): Promise<DigitalSignature> {
+export async function signData(data: string, keyPair: CryptoKeyPair): Promise<DigitalSignature> {
   try {
     // Converter dados para ArrayBuffer
     const encoder = new TextEncoder()
@@ -43,12 +43,12 @@ export async function signData(data: string, privateKey: CryptoKey): Promise<Dig
         name: "RSA-PSS",
         saltLength: 32,
       },
-      privateKey,
+      keyPair.privateKey,
       dataBuffer
     )
 
     // Exportar chave pública
-    const publicKey = await window.crypto.subtle.exportKey("spki", privateKey)
+    const publicKey = await window.crypto.subtle.exportKey("spki", keyPair.publicKey)
     const publicKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(publicKey)))
 
     // Converter assinatura para base64
@@ -155,4 +155,4 @@ export function simulateDigitalSignature(data: string): DigitalSignature {
 export function simulateSignatureVerification(): boolean {
   // Simula verificação bem-sucedida 95% das vezes
   return Math.random() > 0.05
-} 
+}
