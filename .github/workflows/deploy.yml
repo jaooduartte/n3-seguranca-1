@@ -26,9 +26,7 @@ jobs:
       run: npx prisma generate
     
     - name: Run linter
-      run: |
-        echo '{ "extends": "next/core-web-vitals" }' > .eslintrc.json
-        npm run lint
+      run: npm run lint
     
     - name: Run type check
       run: npx tsc --noEmit
